@@ -11,6 +11,10 @@
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
     <SyntheticProperty name="generateCenter" type="boolean" value="true"/>
   </SyntheticProperties>
+  <Events>
+    <EventHandler event="windowActivated" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="formWindowActivated"/>
+    <EventHandler event="windowClosing" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="formWindowClosing"/>
+  </Events>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
@@ -80,10 +84,11 @@
               <Group type="102" attributes="0">
                   <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="btnImport" linkSize="1" max="32767" attributes="0"/>
-                      <Component id="btnExport" linkSize="1" max="32767" attributes="0"/>
+                      <Component id="btnImport" max="32767" attributes="0"/>
+                      <Component id="btnInventory" max="32767" attributes="0"/>
+                      <Component id="btnExport" alignment="0" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace type="separate" max="32767" attributes="0"/>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
                       <Component id="btnLogout" max="32767" attributes="0"/>
                       <Component id="btnCategory" max="32767" attributes="0"/>
@@ -94,7 +99,7 @@
                       <Component id="btnReport" alignment="0" max="32767" attributes="0"/>
                       <Component id="btnStatistic" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="20" max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
               </Group>
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="32767" attributes="0"/>
@@ -123,7 +128,10 @@
                       </Group>
                   </Group>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="btnLogout" linkSize="3" min="-2" pref="100" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Component id="btnInventory" max="32767" attributes="0"/>
+                      <Component id="btnLogout" linkSize="3" pref="100" max="32767" attributes="0"/>
+                  </Group>
                   <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
               </Group>
@@ -155,6 +163,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value=" Xu&#x1ea5;t h&#xe0;ng"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnExportActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnReport">
           <Properties>
@@ -166,6 +177,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value="B&#xe1;o c&#xe1;o nh&#x1ead;p xu&#x1ea5;t"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnReportActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnStaff">
           <Properties>
@@ -180,6 +194,9 @@
               <Insets value="[2, 12, 2, 14]"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnStaffActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnLogout">
           <Properties>
@@ -205,6 +222,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value="Qu&#x1ea3;n l&#xfd; danh m&#x1ee5;c"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCategoryActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnStatistic">
           <Properties>
@@ -221,6 +241,20 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Designed by Vfon"/>
           </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnInventory">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Tahoma" size="12" style="1"/>
+            </Property>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/resources/iventory-resized.png"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="H&#xe0;ng t&#x1ed3;n kho"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnInventoryActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

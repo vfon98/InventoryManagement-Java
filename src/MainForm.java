@@ -39,11 +39,20 @@ public class MainForm extends javax.swing.JFrame {
         btnCategory = new javax.swing.JButton();
         btnStatistic = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
+        btnInventory = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Phần mềm quản lý kho hàng");
         setName("mainForm"); // NOI18N
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowActivated(java.awt.event.WindowEvent evt) {
+                formWindowActivated(evt);
+            }
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jLabel1.setText("Quản lý kho hàng");
@@ -64,15 +73,30 @@ public class MainForm extends javax.swing.JFrame {
         btnExport.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         btnExport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/export2-resized.png"))); // NOI18N
         btnExport.setText(" Xuất hàng");
+        btnExport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExportActionPerformed(evt);
+            }
+        });
 
         btnReport.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         btnReport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/report-resized.png"))); // NOI18N
         btnReport.setText("Báo cáo nhập xuất");
+        btnReport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReportActionPerformed(evt);
+            }
+        });
 
         btnStaff.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         btnStaff.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/staff-resized.png"))); // NOI18N
         btnStaff.setText("Quản lý nhân viên");
         btnStaff.setMargin(new java.awt.Insets(2, 12, 2, 14));
+        btnStaff.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStaffActionPerformed(evt);
+            }
+        });
 
         btnLogout.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         btnLogout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/logout-resized.png"))); // NOI18N
@@ -86,12 +110,26 @@ public class MainForm extends javax.swing.JFrame {
         btnCategory.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         btnCategory.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/tag-resized.png"))); // NOI18N
         btnCategory.setText("Quản lý danh mục");
+        btnCategory.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCategoryActionPerformed(evt);
+            }
+        });
 
         btnStatistic.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         btnStatistic.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/statictis-resized.png"))); // NOI18N
         btnStatistic.setText("Thống kê doanh thu");
 
         jLabel2.setText("Designed by Vfon");
+
+        btnInventory.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        btnInventory.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/iventory-resized.png"))); // NOI18N
+        btnInventory.setText("Hàng tồn kho");
+        btnInventory.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInventoryActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -101,8 +139,9 @@ public class MainForm extends javax.swing.JFrame {
                 .addGap(20, 20, 20)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnImport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnInventory, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnExport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnLogout, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnCategory, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -111,15 +150,12 @@ public class MainForm extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnReport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnStatistic))
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addGap(12, 12, 12))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel2)
                 .addContainerGap())
         );
-
-        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnExport, btnImport});
-
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -136,7 +172,9 @@ public class MainForm extends javax.swing.JFrame {
                         .addComponent(btnStatistic, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnStaff, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
-                .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnInventory, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnLogout, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE))
                 .addGap(4, 4, 4)
                 .addComponent(jLabel2))
         );
@@ -173,12 +211,46 @@ public class MainForm extends javax.swing.JFrame {
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
         new LoginForm().setVisible(true);
         this.dispose();
+        DataProvider.closeConnection();
     }//GEN-LAST:event_btnLogoutActionPerformed
 
     private void btnImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImportActionPerformed
         new ImportForm().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnImportActionPerformed
+
+    private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
+        new ExportForm().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnExportActionPerformed
+
+    private void btnCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCategoryActionPerformed
+        new CategoryForm().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnCategoryActionPerformed
+
+    private void btnStaffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStaffActionPerformed
+        new StaffForm().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnStaffActionPerformed
+
+    private void btnInventoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventoryActionPerformed
+        new InventoryForm().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnInventoryActionPerformed
+
+    private void btnReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportActionPerformed
+        new ReportForm().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnReportActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        DataProvider.closeConnection();
+    }//GEN-LAST:event_formWindowClosing
+
+    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
+        DataProvider.getConnection();
+    }//GEN-LAST:event_formWindowActivated
 
     /**
      * @param args the command line arguments
@@ -219,6 +291,7 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JButton btnCategory;
     private javax.swing.JButton btnExport;
     private javax.swing.JButton btnImport;
+    private javax.swing.JButton btnInventory;
     private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnReport;
     private javax.swing.JButton btnStaff;
