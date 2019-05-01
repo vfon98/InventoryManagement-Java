@@ -1,9 +1,17 @@
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author VPhong
@@ -15,6 +23,7 @@ public class LoginForm extends javax.swing.JFrame {
      */
     public LoginForm() {
         initComponents();
+        DataProvider.getConnection();
     }
 
     /**
@@ -153,13 +162,31 @@ public class LoginForm extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private String hashPassword(String pass) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] degested = md.digest(pass.getBytes());
+            BigInteger hashed = new BigInteger(1, degested);
+            return hashed.toString(16);
+        } catch (NoSuchAlgorithmException ex) {
+            ex.printStackTrace();
+        }
+        return "";
+    }
+
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
         System.exit(0);
     }//GEN-LAST:event_btnExitActionPerformed
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-        new MainForm().setVisible(true);
-        this.dispose();
+        String user = txtUsername.getText();
+        String pass = hashPassword(String.valueOf(txtPassword.getPassword()));
+        if (DataProvider.isLogin(user, pass)) {
+            new MainForm().setVisible(true);
+            this.dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Sai tài khoản hoặc mật khẩu");
+        }
     }//GEN-LAST:event_btnLoginActionPerformed
 
     /**

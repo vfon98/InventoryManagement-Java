@@ -1,5 +1,14 @@
 USE InventoryManager
 GO
+
+CREATE TABLE Account (
+	[User] NVARCHAR(50) PRIMARY KEY,
+	Pass VARCHAR(150) NOT NULL,
+	[Role] NVARCHAR(50)
+)
+GO
+SELECT * FROM Account
+
 CREATE TABLE Category (
 	[No] INT IDENTITY(1, 1),
 	ID VARCHAR(10) PRIMARY KEY,
@@ -7,6 +16,80 @@ CREATE TABLE Category (
 	[Description] NVARCHAR(200)
 )
 GO
-SELECT * FROM Category
-INSERT INTO Category VALUES ('DM001', 'Tieu dung', 'Not')
-TRUNCATE TABLE Category
+
+CREATE TABLE Staff (
+	[No] INT IDENTITY(1, 1),
+	ID VARCHAR(10) PRIMARY KEY,
+	[Name] NVARCHAR(50) NOT NULL,
+	[Address] NVARCHAR(100) NOT NULL,
+	PhoneNumber VARCHAR(15) NOT NULL,
+	BeginDate DATE DEFAULT SYSDATETIME()
+)
+GO
+
+CREATE TABLE ImportBill (
+	[No] INT IDENTITY(1, 1),
+	ID VARCHAR(10) PRIMARY KEY,
+	[Name] NVARCHAR(50) NOT NULL,
+	Category NVARCHAR(50) NOT NULL,
+	Origin NVARCHAR(50) NOT NULL,
+	Quantity INT NOT NULL,
+	Unit NVARCHAR(20),
+	ImpPrice DECIMAL(10, 0),
+	ExpPrice DECIMAL(10, 0),
+	Created_at DATE DEFAULT SYSDATETIME()
+)
+GO
+
+CREATE TABLE ExportBill (
+	[No] INT IDENTITY(1, 1),
+	ID VARCHAR(10) PRIMARY KEY,
+	Customer NVARCHAR(50) NOT NULL,
+	[Address] NVARCHAR(50),
+	Phone VARCHAR(15),
+	Staff NVARCHAR(50),
+	Price DECIMAL(15, 0),
+	Created_at DATE DEFAULT SYSDATETIME()
+)
+GO
+
+CREATE TABLE DetailBill (
+	[No] INT IDENTITY(1, 1) PRIMARY KEY,
+	ProID VARCHAR(10) NOT NULL,
+	ProName NVARCHAR(50) NOT NULL,
+	ProPrice DECIMAL(12, 0),
+	ProQuan INT NOT NULL,
+	BillID VARCHAR(10) REFERENCES ExportBill(ID)
+)
+Go
+
+CREATE TABLE Products (
+	[No] INT IDENTITY(1, 1) PRIMARY KEY,
+	ID VARCHAR(10) NOT NULL,
+	Name NVARCHAR(50) NOT NULL,
+	Price DECIMAL(12, 0) NOT NULL,
+	Remain INT CHECK (Remain >= 0)
+)
+GO
+
+CREATE TABLE Provider (
+	[No] INT IDENTITY(1, 1),
+	ID VARCHAR(10) PRIMARY KEY,
+	[Name] NVARCHAR(100) NOT NULL,
+	[Address] NVARCHAR(100),
+	Phone VARCHAR(50)
+)
+GO
+SELECT * FROM ImportBill
+SELECT * FROM ExportBill
+SELECT * FROM DetailBill
+SELECT * FROM Products
+
+GO
+CREATE TRIGGER update_product_quantity ON DetailBill FOR INSERT
+AS
+	DECLARE @quan INT, @id VARCHAR(10);
+	SELECT @quan = inserted.ProQuan, @id = inserted.ProID FROM inserted;
+	UPDATE Products SET Remain = Remain - @quan WHERE ID = @id;
+	PRINT(@id);
+GO

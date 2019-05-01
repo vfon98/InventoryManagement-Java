@@ -18,11 +18,12 @@ import javax.swing.table.DefaultTableModel;
  */
 public class CategoryForm extends javax.swing.JFrame {
 
-    /**
-     * Creates new form CategoryForm
-     */
+    int row = 0;
+    String selectedId = "";
     public CategoryForm() {
         initComponents();
+        txtID.setText(DataProvider.getCategoryId());
+        updateTable();
     }
 
     /**
@@ -41,10 +42,11 @@ public class CategoryForm extends javax.swing.JFrame {
         txtID = new javax.swing.JTextField();
         txtName = new javax.swing.JTextField();
         btnAdd = new javax.swing.JButton();
-        btnSave = new javax.swing.JButton();
+        btnUpdate = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         txtDesciption = new javax.swing.JTextField();
+        btnCancel = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblCategory = new javax.swing.JTable();
 
@@ -54,9 +56,6 @@ public class CategoryForm extends javax.swing.JFrame {
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
-            }
-            public void windowOpened(java.awt.event.WindowEvent evt) {
-                formWindowOpened(evt);
             }
         });
 
@@ -79,11 +78,31 @@ public class CategoryForm extends javax.swing.JFrame {
             }
         });
 
-        btnSave.setText("Lưu thay đổi");
+        btnUpdate.setText("Lưu thay đổi");
+        btnUpdate.setEnabled(false);
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
 
         btnDelete.setText("Xóa");
+        btnDelete.setEnabled(false);
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         jLabel4.setText("Mô tả");
+
+        btnCancel.setText("Hủy bỏ");
+        btnCancel.setEnabled(false);
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -94,12 +113,14 @@ public class CategoryForm extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(btnAdd)
-                        .addGap(28, 28, 28)
-                        .addComponent(btnSave)
-                        .addGap(33, 33, 33)
-                        .addComponent(btnDelete))
+                        .addGap(18, 18, 18)
+                        .addComponent(btnUpdate)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnDelete)
+                        .addGap(16, 16, 16)
+                        .addComponent(btnCancel))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
+                        .addGap(29, 29, 29)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3)
                             .addComponent(jLabel2)
@@ -107,9 +128,9 @@ public class CategoryForm extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtName)
-                            .addComponent(txtDesciption, javax.swing.GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
+                            .addComponent(txtDesciption, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -128,13 +149,41 @@ public class CategoryForm extends javax.swing.JFrame {
                     .addComponent(txtDesciption, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnAdd)
-                    .addComponent(btnSave)
-                    .addComponent(btnDelete))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnAdd)
+                        .addComponent(btnUpdate))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnDelete)
+                        .addComponent(btnCancel)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        tblCategory.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID", "Tên danh mục", "Mô tả"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblCategory.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tblCategory.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblCategoryMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(tblCategory);
+        if (tblCategory.getColumnModel().getColumnCount() > 0) {
+            tblCategory.getColumnModel().getColumn(0).setMaxWidth(60);
+        }
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -147,7 +196,7 @@ public class CategoryForm extends javax.swing.JFrame {
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
-                .addGap(61, 61, 61)
+                .addGap(81, 81, 81)
                 .addComponent(jLabel1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -172,37 +221,69 @@ public class CategoryForm extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_formWindowClosing
 
-    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        try {
-            txtID.setText(DataProvider.getCategoryId());            
-            DefaultTableModel tableModel = new DefaultTableModel(new Object[]{"ID", "Tên danh mục", "Mô tả"}, 0);
-            tblCategory.setModel(tableModel);
-            
-            DefaultTableModel table = new DefaultTableModel();
-            table = (DefaultTableModel) tblCategory.getModel();
-            ResultSet rs = DataProvider.getAllCategories();
-            while (rs.next()) {
-                table.addRow(new Object[]{rs.getString("id"), rs.getString("Name"), rs.getString("Description")});
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(CategoryForm.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_formWindowOpened
-
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         if (!txtName.getText().equals("")) {
             DataProvider.insertCategory(txtID.getText(), txtName.getText(), txtDesciption.getText());
             resetFields();
+            updateTable();
+            JOptionPane.showMessageDialog(this, "Thêm thành công");
         }
         else {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập tên danh mục");
         }
     }//GEN-LAST:event_btnAddActionPerformed
 
+    private void tblCategoryMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCategoryMouseClicked
+        btnAdd.setEnabled(false);
+        btnUpdate.setEnabled(true);
+        btnDelete.setEnabled(true);
+        btnCancel.setEnabled(true);
+        row = tblCategory.getSelectedRow();
+        selectedId = tblCategory.getValueAt(row, 0).toString();
+        txtID.setText(selectedId);
+        txtName.setText(tblCategory.getValueAt(row, 1).toString());
+        txtDesciption.setText(tblCategory.getValueAt(row, 2).toString());
+    }//GEN-LAST:event_tblCategoryMouseClicked
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        DataProvider.deleteCategory(selectedId);
+        resetFields();
+        updateTable();
+        JOptionPane.showMessageDialog(this, "Xóa thành công");
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        DataProvider.updateCategory(selectedId, txtName.getText(), txtDesciption.getText());
+        updateTable();
+        JOptionPane.showMessageDialog(this, "Chỉnh sửa thành công");
+    }//GEN-LAST:event_btnUpdateActionPerformed
+
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+        tblCategory.clearSelection();
+        resetFields();
+    }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void updateTable() {
+        try {
+            DefaultTableModel model = (DefaultTableModel) tblCategory.getModel();
+            model.setRowCount(0);
+            ResultSet rs = DataProvider.getAllCategories();
+            while (rs.next()) {
+                model.addRow(new Object[]{rs.getString("id"), rs.getString("Name"), rs.getString("Description")});
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CategoryForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     private void resetFields() {
         txtID.setText(DataProvider.getCategoryId());
         txtName.setText("");
         txtDesciption.setText("");
+        btnAdd.setEnabled(true);
+        btnCancel.setEnabled(false);
+        btnUpdate.setEnabled(false);
+        btnDelete.setEnabled(false);
     }
     /**
      * @param args the command line arguments
@@ -241,8 +322,9 @@ public class CategoryForm extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnDelete;
-    private javax.swing.JButton btnSave;
+    private javax.swing.JButton btnUpdate;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

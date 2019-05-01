@@ -1,3 +1,14 @@
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JSpinner;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -15,8 +26,58 @@ public class ReportForm extends javax.swing.JFrame {
      */
     public ReportForm() {
         initComponents();
+        tblImport.getModel().addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent tme) {
+                updateTotalImport();
+            }
+        });
+        tblExport.getModel().addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent tme) {
+                updateTotalExport();
+            }
+        });
+        fetchDataFromDB();
+     }
+    
+    private void fetchDataFromDB() {
+        try {
+            DefaultTableModel importModel = (DefaultTableModel) tblImport.getModel();
+            DefaultTableModel exportModel = (DefaultTableModel) tblExport.getModel();
+            // ## Get Import Table
+            ResultSet rs = DataProvider.getAllImport();
+            while (rs.next()) {
+                String date = new SimpleDateFormat("dd/MM/yyyy").format(rs.getDate("Created_at"));
+                importModel.addRow(new Object[]{rs.getString("ID"), rs.getString("Name"), rs.getLong("ImpPrice"), rs.getInt("Quantity"), date});
+            }
+            // ## Get Export Table
+            rs = DataProvider.getAllExport();
+            while (rs.next()) {
+                String date = new SimpleDateFormat("dd/MM/yyyy").format(rs.getDate("Created_at"));
+                exportModel.addRow(new Object[]{rs.getString("ID"), rs.getString("Customer"), rs.getLong("Price"), date});
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    private void updateTotalImport() {
+        long totalImport = 0L;
+        for (int i = 0; i < tblImport.getRowCount(); i++) {
+            totalImport += (long)tblImport.getValueAt(i, 2) * (int)tblImport.getValueAt(i, 3);
+        }
+        lblImpPrice.setText(String.format("%,d VND", totalImport));
     }
 
+    private void updateTotalExport() {
+        long totalExport = 0L;
+        for (int i = 0; i < tblExport.getRowCount(); i++) {
+            totalExport += (long)tblExport.getValueAt(i, 2);
+        }
+        lblExpPrice.setText(String.format("%,d VND", totalExport));
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -29,27 +90,28 @@ public class ReportForm extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jSpinner1 = new javax.swing.JSpinner();
-        jSpinner2 = new javax.swing.JSpinner();
+        spinFromDate = new javax.swing.JSpinner();
+        spinToDate = new javax.swing.JSpinner();
         jLabel3 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        btnReckon = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblImport = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
+        tblExport = new javax.swing.JTable();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTable4 = new javax.swing.JTable();
+        tblDetail = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
+        lblImpPrice = new javax.swing.JLabel();
+        lblExpPrice = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Báo cáo nhập xuất");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -59,45 +121,51 @@ public class ReportForm extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setText("Báo cáo nhập - xuất");
 
+        jPanel1.setBackground(java.awt.SystemColor.inactiveCaption);
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jLabel2.setText("Từ ngày");
 
-        jSpinner1.setModel(new javax.swing.SpinnerDateModel());
+        spinFromDate.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, null, java.util.Calendar.DAY_OF_WEEK_IN_MONTH));
 
-        jSpinner2.setModel(new javax.swing.SpinnerDateModel());
+        spinToDate.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
 
         jLabel3.setText("Đến ngày");
 
-        jButton1.setText("Thống kê");
+        btnReckon.setText("Thống kê");
+        btnReckon.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReckonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(spinFromDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(67, 67, 67)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(84, 84, 84)
-                .addComponent(jButton1)
-                .addGap(24, 24, 24))
+                .addComponent(spinToDate, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(52, 52, 52)
+                .addComponent(btnReckon)
+                .addGap(71, 71, 71))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(9, 9, 9)
+                .addGap(14, 14, 14)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(spinFromDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(spinToDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3)
-                    .addComponent(jButton1))
+                    .addComponent(btnReckon))
                 .addContainerGap(14, Short.MAX_VALUE))
         );
 
@@ -106,18 +174,34 @@ public class ReportForm extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel4.setText("Hóa đơn nhập hàng");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblImport.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Mã hàng", "Tên hàng", "Giá nhập", "S.lượng", "Ngày nhập"
             }
-        ));
-        jScrollPane1.setViewportView(jTable1);
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Object.class, java.lang.Long.class, java.lang.Object.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(tblImport);
+        if (tblImport.getColumnModel().getColumnCount() > 0) {
+            tblImport.getColumnModel().getColumn(0).setPreferredWidth(58);
+            tblImport.getColumnModel().getColumn(3).setPreferredWidth(56);
+        }
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -126,8 +210,8 @@ public class ReportForm extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(93, 93, 93)
                 .addComponent(jLabel4)
-                .addContainerGap(87, Short.MAX_VALUE))
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap(134, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -144,18 +228,40 @@ public class ReportForm extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel5.setText("Hóa đơn xuất hàng");
 
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+        tblExport.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Mã HD", "K.Hàng", "Tổng giá", "Ngày tạo"
             }
-        ));
-        jScrollPane3.setViewportView(jTable3);
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Object.class, java.lang.Long.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblExport.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblExportMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(tblExport);
+        if (tblExport.getColumnModel().getColumnCount() > 0) {
+            tblExport.getColumnModel().getColumn(0).setPreferredWidth(54);
+            tblExport.getColumnModel().getColumn(0).setMaxWidth(58);
+            tblExport.getColumnModel().getColumn(2).setMaxWidth(60);
+        }
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -164,8 +270,8 @@ public class ReportForm extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(137, 137, 137)
                 .addComponent(jLabel5)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 342, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(109, Short.MAX_VALUE))
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -176,30 +282,31 @@ public class ReportForm extends javax.swing.JFrame {
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        jTable4.setModel(new javax.swing.table.DefaultTableModel(
+        tblDetail.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Mã hàng", "Tên hàng", "Đơn giá", "S.lượng"
             }
         ));
-        jScrollPane4.setViewportView(jTable4);
+        jScrollPane4.setViewportView(tblDetail);
+        if (tblDetail.getColumnModel().getColumnCount() > 0) {
+            tblDetail.getColumnModel().getColumn(0).setMaxWidth(58);
+        }
 
+        jPanel4.setBackground(java.awt.SystemColor.inactiveCaption);
         jPanel4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jLabel6.setText("Tổng tiền nhập hàng");
 
         jLabel7.setText("Tổng tiền xuất hàng");
 
-        jLabel8.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jLabel8.setText("1.000.000 VND");
+        lblImpPrice.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblImpPrice.setText("1.000.000 VND");
 
-        jLabel9.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jLabel9.setText("1.000.000 VND");
+        lblExpPrice.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblExpPrice.setText("1.000.000 VND");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -209,11 +316,11 @@ public class ReportForm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel8)
-                .addGap(44, 44, 44)
+                .addComponent(lblImpPrice)
+                .addGap(117, 117, 117)
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel9)
+                .addComponent(lblExpPrice)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
@@ -223,8 +330,8 @@ public class ReportForm extends javax.swing.JFrame {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
                     .addComponent(jLabel7)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel9))
+                    .addComponent(lblImpPrice)
+                    .addComponent(lblExpPrice))
                 .addContainerGap(31, Short.MAX_VALUE))
         );
 
@@ -235,13 +342,12 @@ public class ReportForm extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -277,6 +383,46 @@ public class ReportForm extends javax.swing.JFrame {
         new MainForm().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_formWindowClosing
+
+    private void tblExportMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblExportMouseClicked
+        try {
+            int row = tblExport.getSelectedRow();
+            String billId = tblExport.getValueAt(row, 0).toString();
+            DefaultTableModel model = (DefaultTableModel) tblDetail.getModel();
+            model.setRowCount(0);
+            ResultSet rs = DataProvider.getDetailBill(billId);
+            while (rs.next()) {
+                model.addRow(new Object[]{rs.getString("ProID"), rs.getString("ProName"), rs.getLong("ProPrice"), rs.getInt("ProQuan")});
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_tblExportMouseClicked
+
+    private void btnReckonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReckonActionPerformed
+        String fromDate = new SimpleDateFormat("yyyy-MM-dd").format(spinFromDate.getValue());
+        String toDate = new SimpleDateFormat("yyyy-MM-dd").format(spinToDate.getValue());
+        try {
+            DefaultTableModel importModel = (DefaultTableModel) tblImport.getModel();
+            importModel.setRowCount(0);
+            DefaultTableModel exportModel = (DefaultTableModel) tblExport.getModel();
+            exportModel.setRowCount(0);
+            // ## Get Import Table
+            ResultSet rs = DataProvider.getImportByDate(fromDate, toDate);
+            while (rs.next()) {
+                String date = new SimpleDateFormat("dd/MM/yyyy").format(rs.getDate("Created_at"));
+                importModel.addRow(new Object[]{rs.getString("ID"), rs.getString("Name"), rs.getLong("ImpPrice"), rs.getInt("Quantity"), date});
+            }
+            // ## Get Export Table
+            rs = DataProvider.getExportByDate(fromDate, toDate);
+            while (rs.next()) {
+                String date = new SimpleDateFormat("dd/MM/yyyy").format(rs.getDate("Created_at"));
+                exportModel.addRow(new Object[]{rs.getString("ID"), rs.getString("Customer"), rs.getLong("Price"), date});
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_btnReckonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -314,7 +460,7 @@ public class ReportForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnReckon;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -322,8 +468,6 @@ public class ReportForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -331,10 +475,12 @@ public class ReportForm extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JSpinner jSpinner1;
-    private javax.swing.JSpinner jSpinner2;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable3;
-    private javax.swing.JTable jTable4;
+    private javax.swing.JLabel lblExpPrice;
+    private javax.swing.JLabel lblImpPrice;
+    private javax.swing.JSpinner spinFromDate;
+    private javax.swing.JSpinner spinToDate;
+    private javax.swing.JTable tblDetail;
+    private javax.swing.JTable tblExport;
+    private javax.swing.JTable tblImport;
     // End of variables declaration//GEN-END:variables
 }

@@ -5,13 +5,8 @@
         <group>
             <file>file:/D:/Java/InventoryManager/src/DataProvider.java</file>
             <file>file:/D:/Java/InventoryManager/src/MainForm.java</file>
-            <file>file:/D:/Java/InventoryManager/src/StaffForm.java</file>
+            <file>file:/D:/Java/InventoryManager/src/ProductForm.java</file>
             <file>file:/D:/Java/InventoryManager/src/LoginForm.java</file>
-            <file>file:/D:/Java/InventoryManager/src/ImportForm.java</file>
-            <file>file:/D:/Java/InventoryManager/src/CategoryForm.java</file>
-            <file>file:/D:/Java/InventoryManager/src/ReportForm.java</file>
-            <file>file:/D:/Java/InventoryManager/src/ExportForm.java</file>
-            <file>file:/D:/Java/InventoryManager/src/InventoryForm.java</file>
         </group>
     </open-files>
 </project-private>
