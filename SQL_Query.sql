@@ -1,3 +1,6 @@
+CREATE DATABASE InventoryManager
+GO
+
 USE InventoryManager
 GO
 
